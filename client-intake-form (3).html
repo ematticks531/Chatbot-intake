@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Customer Intake Form</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1a1a;
+    --ink-mid: #444;
+    --ink-light: #888;
+    --border: #e2e2e2;
+    --bg: #f8f7f5;
+    --white: #ffffff;
+    --accent: #2c5f3f;
+    --accent-light: #edf2eb;
+    --accent-mid: #4a8c63;
+    --error: #c0392b;
+    --success: #2c5f3f;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 48px 24px; }
+
+  .page { max-width: 720px; margin: 0 auto; }
+
+  .form-header { margin-bottom: 48px; }
+  .agency-tag { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .agency-tag::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .form-header h1 { font-family: 'DM Serif Display', serif; font-size: 38px; font-weight: 400; color: var(--ink); line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px; }
+  .form-header h1 em { font-style: italic; color: var(--accent); }
+  .form-header p { font-size: 15px; color: var(--ink-light); line-height: 1.7; font-weight: 300; max-width: 520px; }
+  .time-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); color: var(--accent); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px; margin-top: 14px; }
+
+  .progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 40px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+
+  .section { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 20px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .section-num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; color: var(--ink); }
+  .section-sub { font-size: 12.5px; color: var(--ink-light); margin-top: 2px; }
+
+  .field-grid { display: grid; gap: 20px; }
+  .field-grid.two-col { grid-template-columns: 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 13px; font-weight: 500; color: var(--ink-mid); letter-spacing: 0.01em; }
+  .field .hint { font-size: 11.5px; color: var(--ink-light); margin-top: -2px; }
+  .field input, .field select, .field textarea {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(44,95,63,0.08); }
+  .field input::placeholder, .field textarea::placeholder { color: #bbb; }
+  .field textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+  .radio-group { display: flex; flex-direction: column; gap: 8px; }
+  .radio-option { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+  .radio-option:hover { border-color: var(--accent); background: var(--accent-light); }
+  .radio-option input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; }
+  .radio-option label { font-size: 13.5px; color: var(--ink-mid); cursor: pointer; }
+  .radio-option.selected { border-color: var(--accent); background: var(--accent-light); }
+
+  .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .check-option { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+  .check-option:hover { border-color: var(--accent); }
+  .check-option input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+  .check-option label { font-size: 13px; color: var(--ink-mid); cursor: pointer; }
+
+  .color-row { display: flex; align-items: center; gap: 12px; }
+  .color-row input[type="color"] { width: 48px; height: 40px; border: 1px solid var(--border); border-radius: 8px; padding: 2px; cursor: pointer; background: none; flex-shrink: 0; }
+  .color-row input[type="text"] { flex: 1; }
+  .color-preview { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0; }
+
+  .file-drop { border: 2px dashed var(--border); border-radius: 8px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .file-drop:hover { border-color: var(--accent); background: var(--accent-light); }
+  .file-drop-icon { font-size: 24px; margin-bottom: 8px; }
+  .file-drop-text { font-size: 13px; color: var(--ink-light); }
+  .file-drop-text strong { color: var(--accent); }
+  .file-drop input { display: none; }
+
+  .submit-section { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 20px; text-align: center; }
+  .submit-btn {
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    padding: 16px 48px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.02em;
+    width: 100%;
+    max-width: 320px;
+  }
+  .submit-btn:hover { background: var(--accent-mid); }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+  .submit-note { font-size: 12px; color: var(--ink-light); margin-top: 12px; }
+
+  .success-state { display: none; text-align: center; padding: 48px 32px; }
+  .success-icon { font-size: 48px; margin-bottom: 16px; }
+  .success-title { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
+  .success-msg { font-size: 15px; color: var(--ink-light); line-height: 1.7; font-weight: 300; }
+
+  .form-footer { text-align: center; padding: 24px 0 0; font-size: 12px; color: var(--ink-light); }
+
+  @media (max-width: 600px) {
+    .field-grid.two-col { grid-template-columns: 1fr; }
+    .checkbox-group { grid-template-columns: 1fr; }
+    body { padding: 24px 16px; }
+    .section { padding: 24px 20px; }
+    .form-header h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="form-header">
+    <div class="agency-tag">New Client Onboarding</div>
+    <h1>New Customer <em>Intake Form</em></h1>
+    <p>Fill out the details below so we can build a fully customized, branded chat agent for your practice. The more detail you provide, the better your agent will perform.</p>
+    <div class="time-badge">&#9201; Takes about 10 minutes</div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <div id="form-body">
+
+    <!-- Section 1: Practice Basics -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div>
+          <div class="section-title">Practice basics</div>
+          <div class="section-sub">Your core contact information</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field-grid two-col">
+          <div class="field">
+            <label>Practice name *</label>
+            <input type="text" id="practice_name" placeholder="e.g. Sunrise Family Dental" oninput="updateProgress()" />
+          </div>
+          <div class="field">
+            <label>Specialty / practice type *</label>
+            <select id="specialty" onchange="updateProgress()">
+              <option value="">Select one...</option>
+              <option>General Dentistry</option>
+              <option>Periodontics</option>
+              <option>Orthodontics</option>
+              <option>Oral Surgery</option>
+              <option>Endodontics</option>
+              <option>Pediatric Dentistry</option>
+              <option>Cosmetic Dentistry</option>
+              <option>HVAC</option>
+              <option>Med Spa</option>
+              <option>Chiropractic</option>
+              <option>Physical Therapy</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Doctor name(s) and credentials *</label>
+          <input type="text" id="doctor_name" placeholder="e.g. Dr. Sarah Johnson, DDS" />
+        </div>
+        <div class="field">
+          <label>Practice address *</label>
+          <input type="text" id="address" placeholder="Full street address including suite, city, state, zip" />
+        </div>
+        <div class="field-grid two-col">
+          <div class="field">
+            <label>Phone number *</label>
+            <input type="tel" id="phone" placeholder="(555) 555-0100" />
+          </div>
+          <div class="field">
+            <label>Practice website</label>
+            <input type="url" id="website" placeholder="https://yourpractice.com" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Practice email (patient-facing)</label>
+          <input type="email" id="practice_email" placeholder="info@yourpractice.com" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Hours -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div>
+          <div class="section-title">Office hours</div>
+          <div class="section-sub">Your agent will answer hour questions 24/7 using these</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field-grid two-col">
+          <div class="field">
+            <label>Monday – Friday</label>
+            <input type="text" id="hours_weekday" placeholder="e.g. 8:00am – 5:00pm" />
+          </div>
+          <div class="field">
+            <label>Saturday</label>
+            <input type="text" id="hours_saturday" placeholder="e.g. 9:00am – 2:00pm or Closed" />
+          </div>
+        </div>
+        <div class="field-grid two-col">
+          <div class="field">
+            <label>Sunday</label>
+            <input type="text" id="hours_sunday" placeholder="e.g. Closed" />
+          </div>
+          <div class="field">
+            <label>After-hours / emergency?</label>
+            <input type="text" id="hours_emergency" placeholder="e.g. Call (555) 555-0100 for emergencies" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Holiday or special closure notes</label>
+          <input type="text" id="hours_notes" placeholder="e.g. Closed all major federal holidays" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Services -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div>
+          <div class="section-title">Services</div>
+          <div class="section-sub">What your agent will tell patients about</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>List your top 5–8 services *</label>
+          <div class="hint">One per line. Include a brief description if you'd like the agent to explain each one.</div>
+          <textarea id="services" rows="7" placeholder="e.g.&#10;Teeth Cleaning — routine cleaning and exam&#10;Teeth Whitening — in-office and take-home options&#10;AC Repair — same-day diagnostics on all major brands&#10;Massage Therapy — 60 and 90 minute sessions&#10;Annual Maintenance Plan — priority scheduling and discounts"></textarea>
+        </div>
+        <div class="field">
+          <label>Services you do NOT offer (that patients often ask about)</label>
+          <div class="hint">Helps the agent redirect patients correctly instead of guessing.</div>
+          <textarea id="services_not_offered" rows="3" placeholder="e.g. We do not offer emergency walk-ins — appointments required. We don't carry brand X products."></textarea>
+        </div>
+        <div class="field">
+          <label>Any services to promote or highlight?</label>
+          <input type="text" id="services_promo" placeholder="e.g. Free consultations, new customer discount, seasonal specials" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Insurance & Payment -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div>
+          <div class="section-title">Insurance & payment</div>
+          <div class="section-sub">One of the most common patient questions</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Insurance plans accepted</label>
+          <div class="hint">List the major ones. Or write "We accept most major plans" if you prefer a general answer.</div>
+          <textarea id="insurance" rows="3" placeholder="e.g. Delta Dental, Cigna, Aetna, MetLife, United Healthcare, Blue Cross Blue Shield"></textarea>
+        </div>
+        <div class="field">
+          <label>Do you file insurance claims on the patient's behalf?</label>
+          <div class="radio-group">
+            <div class="radio-option" onclick="selectRadio(this, 'insurance_filing', 'yes')">
+              <input type="radio" name="insurance_filing" value="yes" /> <label>Yes — we file all claims for patients</label>
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'insurance_filing', 'no')">
+              <input type="radio" name="insurance_filing" value="no" /> <label>No — patients file their own claims</label>
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'insurance_filing', 'sometimes')">
+              <input type="radio" name="insurance_filing" value="sometimes" /> <label>We provide documentation but patients file</label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Payment methods accepted</label>
+          <div class="checkbox-group">
+            <div class="check-option"><input type="checkbox" id="pay_visa" /><label for="pay_visa">Visa / Mastercard</label></div>
+            <div class="check-option"><input type="checkbox" id="pay_amex" /><label for="pay_amex">American Express</label></div>
+            <div class="check-option"><input type="checkbox" id="pay_discover" /><label for="pay_discover">Discover</label></div>
+            <div class="check-option"><input type="checkbox" id="pay_check" /><label for="pay_check">Personal check</label></div>
+            <div class="check-option"><input type="checkbox" id="pay_cash" /><label for="pay_cash">Cash</label></div>
+            <div class="check-option"><input type="checkbox" id="pay_financing" /><label for="pay_financing">Financing / payment plans</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Financing details (if applicable)</label>
+          <input type="text" id="financing_details" placeholder="e.g. CareCredit accepted, 0% financing for 12 months" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: New Patients -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div>
+          <div class="section-title">New patients</div>
+          <div class="section-sub">What the agent tells first-timers</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Are you currently accepting new patients?</label>
+          <div class="radio-group">
+            <div class="radio-option" onclick="selectRadio(this, 'new_patients', 'yes')">
+              <input type="radio" name="new_patients" value="yes" /> <label>Yes — actively welcoming new patients</label>
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'new_patients', 'limited')">
+              <input type="radio" name="new_patients" value="limited" /> <label>Limited — accepting select new patients</label>
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'new_patients', 'no')">
+              <input type="radio" name="new_patients" value="no" /> <label>No — not currently accepting new patients</label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>What should new patients bring to their first visit?</label>
+          <textarea id="new_patient_bring" rows="3" placeholder="e.g. Photo ID, insurance card, list of current medications, arrive 10 minutes early for paperwork"></textarea>
+        </div>
+        <div class="field-grid two-col">
+          <div class="field">
+            <label>How long is the first appointment?</label>
+            <input type="text" id="first_appt_length" placeholder="e.g. 60–90 minutes" />
+          </div>
+          <div class="field">
+            <label>Online intake forms URL (if available)</label>
+            <input type="url" id="intake_forms_url" placeholder="https://patientportal.com/..." />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Notifications -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div>
+          <div class="section-title">Lead notifications</div>
+          <div class="section-sub">Who gets alerted when a patient books through the agent</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field-grid two-col">
+          <div class="field">
+            <label>Notification contact name *</label>
+            <input type="text" id="notify_name" placeholder="e.g. Jennifer at the front desk" />
+          </div>
+          <div class="field">
+            <label>Notification email *</label>
+            <input type="email" id="notify_email" placeholder="frontdesk@yourpractice.com" />
+          </div>
+        </div>
+        <div class="field">
+          <label>SMS notification number (optional)</label>
+          <div class="hint">If provided we'll set up instant text alerts to this number when an appointment is requested.</div>
+          <input type="tel" id="notify_sms" placeholder="(555) 555-0100" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Agent Personality -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div>
+          <div class="section-title">Agent personality</div>
+          <div class="section-sub">How your agent should sound to patients</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field-grid two-col">
+          <div class="field">
+            <label>Agent name *</label>
+            <div class="hint">The name patients will see in the chat. Keep it simple and friendly.</div>
+            <input type="text" id="agent_name" placeholder="e.g. Aria, Max, Nova, Riley" />
+          </div>
+          <div class="field">
+            <label>Tone / communication style *</label>
+            <select id="agent_tone">
+              <option value="">Select one...</option>
+              <option>Warm and friendly — feels like talking to a real person</option>
+              <option>Professional and clinical — precise and informative</option>
+              <option>Conversational — casual, approachable, relaxed</option>
+              <option>Luxury / refined — elevated language, high-end feel</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Anything specific the agent should always say or never say?</label>
+          <textarea id="agent_rules" rows="3" placeholder="e.g. Always mention our free consultation offer. Never quote specific prices — direct to call the office instead."></textarea>
+        </div>
+        <div class="field">
+          <label>Do you receive referrals from other providers?</label>
+          <div class="radio-group">
+            <div class="radio-option" onclick="selectRadio(this, 'referrals', 'yes')">
+              <input type="radio" name="referrals" value="yes" /> <label>Yes — referrals are a significant part of our practice</label>
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'referrals', 'sometimes')">
+              <input type="radio" name="referrals" value="sometimes" /> <label>Sometimes — occasional referrals from other providers</label>
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'referrals', 'no')">
+              <input type="radio" name="referrals" value="no" /> <label>No — we don't typically receive referrals</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Branding -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <div>
+          <div class="section-title">Branding & design</div>
+          <div class="section-sub">So your agent looks like it belongs on your website</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Primary brand color</label>
+          <div class="hint">Your main color — used for the chat button, header, and key elements.</div>
+          <div class="color-row">
+            <input type="color" id="color_primary_picker" value="#2c5f3f" oninput="syncColor('primary')" />
+            <input type="text" id="color_primary" placeholder="#2c5f3f" oninput="syncColorPicker('primary')" />
+            <div class="color-preview" id="color_primary_preview" style="background:#2c5f3f;"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Secondary / accent color</label>
+          <div class="hint">Used for highlights, quick reply buttons, and accents.</div>
+          <div class="color-row">
+            <input type="color" id="color_secondary_picker" value="#f0f0f0" oninput="syncColor('secondary')" />
+            <input type="text" id="color_secondary" placeholder="#f0f0f0" oninput="syncColorPicker('secondary')" />
+            <div class="color-preview" id="color_secondary_preview" style="background:#f0f0f0;"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Website font (if you know it)</label>
+          <input type="text" id="font" placeholder="e.g. Cormorant Garamond, DM Sans, Montserrat — or leave blank and we'll match it" />
+        </div>
+        <div class="field">
+          <label>Website URL for branding reference</label>
+          <div class="hint">We'll pull your colors and fonts directly from your site if you're not sure of the exact values.</div>
+          <input type="url" id="brand_website" placeholder="https://yourpractice.com" />
+        </div>
+        <div class="field">
+          <label>Any other branding notes?</label>
+          <textarea id="brand_notes" rows="3" placeholder="e.g. Our brand feels clean and clinical. We use a lot of white space. Avoid anything that looks cheap or generic."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Anything else -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">9</div>
+        <div>
+          <div class="section-title">Anything else?</div>
+          <div class="section-sub">Tell us anything that would help us build the best agent for your practice</div>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Additional notes, special requests, or questions</label>
+          <textarea id="notes" rows="5" placeholder="e.g. We want the agent to always feel warm and welcoming. Mention our satisfaction guarantee early in the conversation. If someone asks about pricing, direct them to call us for a custom quote."></textarea>
+        </div>
+        <div class="field">
+          <label>How did you hear about us?</label>
+          <select id="referral_source">
+            <option value="">Select one...</option>
+            <option>Friend or colleague referral</option>
+            <option>Google search</option>
+            <option>Social media</option>
+            <option>LinkedIn</option>
+            <option>Dental conference or event</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-section">
+      <p style="font-size:14px; color:var(--ink-light); margin-bottom:24px; line-height:1.6;">Once you submit, we'll review your answers and have your custom agent ready within <strong style="color:var(--ink);">3–5 business days.</strong> We'll reach out if we have any questions.</p>
+      <button class="submit-btn" onclick="submitForm()" id="submit-btn">Submit intake form</button>
+      <p class="submit-note">Your information is kept private and only used to build your agent.</p>
+    </div>
+
+  </div>
+
+  <!-- Success state -->
+  <div class="success-state" id="success-state">
+    <div class="success-icon">&#10003;</div>
+    <div class="success-title">You're all set!</div>
+    <p class="success-msg">We've received your intake form and will have your custom AI agent ready within 3–5 business days. Keep an eye on your inbox — we'll reach out if we have any follow-up questions.<br><br>Thank you for choosing us to build your agent.</p>
+  </div>
+
+  <div class="form-footer">Built by Little Bot AI &middot; Powered by Little Bot AI</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init('mL9Z92kZ6yZpjqdR9');
+
+  function updateProgress() {
+    const fields = ['practice_name', 'specialty', 'doctor_name', 'notify_email', 'agent_name', 'agent_tone', 'color_primary'];
+    const filled = fields.filter(id => { const el = document.getElementById(id); return el && el.value.trim() !== ''; }).length;
+    document.getElementById('progress').style.width = Math.round((filled / fields.length) * 100) + '%';
+  }
+
+  function selectRadio(el, name, value) {
+    document.querySelectorAll('[name="' + name + '"]').forEach(r => {
+      r.closest('.radio-option').classList.remove('selected');
+    });
+    el.classList.add('selected');
+    el.querySelector('input[type="radio"]').checked = true;
+  }
+
+  function syncColor(which) {
+    const picker = document.getElementById('color_' + which + '_picker');
+    document.getElementById('color_' + which).value = picker.value;
+    document.getElementById('color_' + which + '_preview').style.background = picker.value;
+  }
+
+  function syncColorPicker(which) {
+    const hex = document.getElementById('color_' + which).value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+      document.getElementById('color_' + which + '_picker').value = hex;
+      document.getElementById('color_' + which + '_preview').style.background = hex;
+    }
+  }
+
+  function getRadioValue(name) {
+    const checked = document.querySelector('input[name="' + name + '"]:checked');
+    return checked ? checked.value : 'Not specified';
+  }
+
+  function getCheckboxValues() {
+    const boxes = ['pay_visa', 'pay_amex', 'pay_discover', 'pay_check', 'pay_cash', 'pay_financing'];
+    const labels = ['Visa/MC', 'Amex', 'Discover', 'Check', 'Cash', 'Financing'];
+    return boxes.map((id, i) => document.getElementById(id).checked ? labels[i] : null).filter(Boolean).join(', ') || 'Not specified';
+  }
+
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? (el.value.trim() || 'Not provided') : 'Not provided';
+  }
+
+  function submitForm() {
+    const required = [
+      { id: 'practice_name', label: 'Practice name' },
+      { id: 'doctor_name', label: 'Doctor name' },
+      { id: 'notify_email', label: 'Notification email' },
+      { id: 'agent_name', label: 'Agent name' }
+    ];
+
+    for (const f of required) {
+      const el = document.getElementById(f.id);
+      if (!el || !el.value.trim()) {
+        el.focus();
+        el.style.borderColor = 'var(--error)';
+        setTimeout(() => el.style.borderColor = '', 2000);
+        alert('Please fill in: ' + f.label);
+        return;
+      }
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    const payload = {
+      practice_name: val('practice_name'),
+      specialty: val('specialty'),
+      doctor_name: val('doctor_name'),
+      address: val('address'),
+      phone: val('phone'),
+      website: val('website'),
+      practice_email: val('practice_email'),
+      hours_weekday: val('hours_weekday'),
+      hours_saturday: val('hours_saturday'),
+      hours_sunday: val('hours_sunday'),
+      hours_emergency: val('hours_emergency'),
+      hours_notes: val('hours_notes'),
+      services: val('services'),
+      services_not_offered: val('services_not_offered'),
+      services_promo: val('services_promo'),
+      insurance: val('insurance'),
+      insurance_filing: getRadioValue('insurance_filing'),
+      payment_methods: getCheckboxValues(),
+      financing_details: val('financing_details'),
+      new_patients: getRadioValue('new_patients'),
+      new_patient_bring: val('new_patient_bring'),
+      first_appt_length: val('first_appt_length'),
+      intake_forms_url: val('intake_forms_url'),
+      notify_name: val('notify_name'),
+      notify_email: val('notify_email'),
+      notify_sms: val('notify_sms'),
+      agent_name: val('agent_name'),
+      agent_tone: val('agent_tone'),
+      agent_rules: val('agent_rules'),
+      referrals: getRadioValue('referrals'),
+      color_primary: val('color_primary'),
+      color_secondary: val('color_secondary'),
+      font: val('font'),
+      brand_website: val('brand_website'),
+      brand_notes: val('brand_notes'),
+      notes: val('notes'),
+      referral_source: val('referral_source'),
+      submitted_at: new Date().toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })
+    };
+
+    emailjs.send('service_8vw99nj', 'template_4afyaxe', payload)
+    .then(function() {
+      document.getElementById('form-body').style.display = 'none';
+      document.getElementById('success-state').style.display = 'block';
+      document.getElementById('progress').style.width = '100%';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(function(err) {
+      console.warn('EmailJS error:', err);
+      btn.disabled = false;
+      btn.textContent = 'Submit intake form';
+      alert('There was an issue submitting the form. Please try again or email us directly.');
+    });
+  }
+
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('input', updateProgress);
+    el.addEventListener('change', updateProgress);
+  });
+</script>
+
+</body>
+</html>
